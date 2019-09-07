@@ -1,0 +1,278 @@
+@import '../assets/styles/variables.scss';
+
+$topnav-tabs-height: 28px;
+$search-placeholder-text-color: #c0c5c9;
+$search-item-height: 72px;
+$search-empty-result-font-color: #6C747D;
+$search-input-height: $topnav-tabs-height - 2px;
+$profile-tablet-width:150px;
+$header-side-offset-mobile: 45px;
+$header-side-offset-desktop: 55px;
+$notification-badge-height: 14px;
+$mobile-icon-anim-time: 0.35s;
+// no profile username in browser view tablet size
+$profile-tablet-width:150px;
+$profile-desktop-width-min:160px;
+$profile-desktop-width:240px;
+$caret-pos-x: 7px;
+$profile-caret-height: 8px;
+$profile-border-color: #cdd0d3;
+$profile-dropdown-list-fontsize: 13px;
+$mobile-default-taparea-size: 32px;
+$bookmark-icon-bloat-anim-time: .15s;
+
+.header {
+    background-color: #ffffff;
+}
+
+.logo {
+    position: relative;
+    background-image: url(../assets/images/logo-ws1.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 175px;
+    height: 40px;
+    margin-top: 10px;
+    left: 55px;
+}
+
+.profile-container {
+    margin: 10px 0;
+    color: #414b57;
+}
+
+.profile {
+    background-image: url(../assets/images/icon-profile.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 32px;
+    height: 32px;
+}
+
+.profile-text {
+    font-size: 14px;
+    font-family: 'Open Sans Regular', sans-serif;
+    color: #414b57;
+    font-weight: 300;
+    margin: 3px 0 0 10px;
+}
+
+.arrow-container {
+    margin: 7px 0 0 8px;
+}
+
+.search-form {
+    position: relative;
+    width:100%;
+    height: $header-height;
+    font-size: 16px;
+    z-index: -1;
+    opacity: 0;
+    transition: all 0.25s;
+    padding-top: ($header-height - $search-input-height)/2;
+
+    @media(min-width: $browser-transition-point) {
+        text-align: center;
+        z-index: 51;
+        opacity: 1;
+        display: block;
+        margin: 0 auto;
+        width: 60%;
+    }
+    @media(min-width: $tabletS) {
+        width: 55%;
+    }
+}
+
+.search-input-bar-focus {
+    height: 120px;
+}
+
+.search-input-bar-focusout {
+    height: $search-input-height;
+}
+
+.search-input-bar {
+    position: relative;
+    display: block;
+    width: 70%;
+    margin: 0 15px;
+    font-size: 14px;
+    color: $mediumgrey;
+
+    @media(min-width: $phoneS) {
+        width: 72%;
+    }
+
+    @media(min-width: $phoneM) {
+        width: 75%;
+    }
+
+    @media(min-width: $browser-transition-point) {
+        margin:0 auto;
+        width: 80%;
+        max-width: 420px;
+    }
+
+    @media(min-width: $tabletS) {
+        width: 70%;
+        max-width: 600px;
+    }
+
+    label, button {
+        position: absolute;
+        height: 100%;
+        top: 0;
+        color: inherit;
+    }
+
+    .search-label {
+        margin-left: 3px;
+    }
+
+    .search-clear-button {
+        color: black;
+        border: none;
+        top:-3px;
+        background-color: transparent;
+    }
+
+    .search-enter-button {
+        margin-top: 90px;
+        cursor: pointer;
+    }
+
+    // Change placeholder text color to light grey -- use opacity on placeholder would cause the whole input field has opacity on IE11
+    ::placeholder {
+        color: $search-placeholder-text-color;
+        font-family: "Open Sans Regular", sans-serif;
+    }
+    ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+        color: $search-placeholder-text-color;
+        font-family: "Open Sans Regular", sans-serif;
+        // Safari placeholder text was slightly lower so use line-height to adjust
+        line-height: 16px;
+    }
+    ::-moz-placeholder { /* Firefox 19+ */
+        color: $search-placeholder-text-color;
+        font-family: "Open Sans Regular", sans-serif;
+        opacity: 1;
+    }
+    :-ms-input-placeholder { /* IE 10+ */
+        color: $search-placeholder-text-color;
+        font-family: "Open Sans Regular", sans-serif;
+    }
+
+    label {
+        left: 0;
+        padding: 0 2px;
+        color: $search-placeholder-text-color;
+
+        svg {
+            width:24px;
+            height:24px;
+            margin:1px;
+        }
+    }
+
+    button {
+        width:32px;
+        height: 32px;
+        right: 0;
+        opacity: 0.5;
+    }
+
+    input, textarea {
+        width: 100%;
+        height: 100%;
+        border: solid 1px #d7dee2;
+        border-radius: 4px;
+        padding: 0 $search-input-height;
+        color: inherit;
+
+        &::-ms-clear {
+            display: none;
+        }
+    }
+}
+
+.header-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: $header-height;
+    opacity: 1;
+    z-index: 100;
+
+    @media(min-width: $tabletS) {
+        left: $header-side-offset-mobile;
+    }
+
+    .branding-logo {
+        display: none;
+        margin-top: ($header-height - $topnav-tabs-height)/2;
+        @media(min-width: $tabletS) {
+            display: block;
+            width: 175px;
+            left: $header-side-offset-desktop;
+            height: 40px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-image: url(../assets/images/logo-ws1.png);
+        }
+    }
+
+    .page-back-button {
+        width: 40px;
+        height: $header-height;
+
+        svg.icon-page-back {
+            margin: ($header-height - $mobile-default-taparea-size)/2 6px;
+            display: none;
+        }
+
+        svg.icon-page-back.page-back-show {
+            display: block;
+
+            @media(min-width: $tabletS) {
+                display: none;
+            }
+        }
+    }
+}
+
+.header-center {
+    width: 100%;
+    height: $header-height;
+    position: relative;
+}
+
+.header-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: $header-height;
+    font-size: 0;
+    text-align: right;
+    white-space: nowrap;
+
+    * {
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    @media(min-width: $tabletS) {
+        width: $profile-tablet-width;
+        right: $header-side-offset-desktop/2;
+    }
+
+    @media(min-width: $desktopM) {
+        width: $profile-desktop-width;
+        right: $header-side-offset-desktop;
+    }
+
+    .icon-show-notifications-context{
+        margin: 5px;
+    }
+}

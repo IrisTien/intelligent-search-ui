@@ -1,0 +1,50 @@
+<div class="spinner-container" *ngIf="loading">
+  <span class="spinner">
+    Loading...
+  </span>
+</div>
+<div class="tab-content-container">
+  <clr-tabs clrLayout="vertical">
+    <clr-tab>
+      <button clrTabLink>
+        <clr-icon shape="bubble-chart"></clr-icon>
+        Graph
+      </button>
+      <clr-tab-content>
+          <div class="clr-row tab-content-items">
+            <div *ngIf="noData" class="clr-col-12 hint">
+              <div class="graph-icon"></div>
+              <h4 class="hint-text">Type content in search bar to view net graph...</h4>
+            </div>
+            <div id="chart"></div>
+          </div>
+          <div id="tooltip" class="tooltip">
+            <div class="clr-row">
+              <ng-container *ngFor="let item of tooltipData">
+                <div class="clr-col-sm-2 tooltip-item tooltip-item-label">
+                  <label>{{item.label}}</label>
+                </div>
+                <div class="clr-col-sm-10 tooltip-item">
+                  <span>{{item.content}}</span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+      </clr-tab-content>
+    </clr-tab>
+    <clr-tab>
+      <button clrTabLink>
+        <clr-icon shape="table"></clr-icon>
+        Table
+      </button>
+      <clr-tab-content>
+        <div class="clr-row tab-content-items">
+          <div class="clr-col-12 hint">
+            <div class="table-icon"></div>
+            <h4 class="hint-text">Type content in search bar to view data grid...</h4>
+          </div>
+        </div>
+      </clr-tab-content>
+    </clr-tab>
+  </clr-tabs>
+</div>

@@ -1,0 +1,33 @@
+{
+    "nodes": [
+        {
+            "id": "foo",
+            "type": "person"
+        },
+        {
+            "id": "bar",
+            "type": "person"
+        },
+        {
+            "id": "baz",
+            "type": "person"
+        }
+    ],
+    "links": [
+        {
+            "id": "foo-bar",
+            "from": "foo",
+            "to": "bar"
+        },
+        {
+            "id": "bar-baz",
+            "from": "bar",
+            "to": "baz"
+        },
+        {
+            "id": "baz-foo",
+            "from": "baz",
+            "to": "foo"
+        }
+    ]
+}

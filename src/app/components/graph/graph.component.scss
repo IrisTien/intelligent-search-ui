@@ -1,0 +1,67 @@
+@import '../../../assets/styles/variables.scss';
+
+.tab-content-items {
+  width: 100%;
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.hint {
+  display: block;
+  margin: 20px 30px;
+  color: $mediumgrey;
+  width: 100%;
+  .hint-text {
+    text-align: center;
+  }
+}
+
+.spinner-container {
+  position: absolute;
+  display: flex;
+  background-color: transparent;
+  width: 100vw;
+  height: 100vh;
+}
+
+.spinner {
+  display: block;
+  margin: auto;
+}
+
+.tooltip {
+  position: absolute;
+  display: none;
+  z-index: 9999;
+  background-color: #eee;
+  border: 1px solid #09c;
+  padding: 10px;
+  pointer-events: none;
+  width: 600px;
+  .tooltip-item-label {
+    font-weight: 600;
+  }
+  .tooltip-item {
+    overflow: hidden;
+    word-break: break-all;
+    word-wrap: break-word;
+  }
+}
+
+.graph-icon {
+  background: url(../../../assets/images/analytics.svg) no-repeat;
+  background-size: contain;
+  width: 100px;
+  height: 100px;
+  display: block;
+  margin: 2rem auto;
+}
+
+.table-icon {
+  background: url(../../../assets/images/data-table.svg) no-repeat;
+  background-size: contain;
+  width: 100px;
+  height: 100px;
+  display: block;
+  margin: 2rem auto;
+}
