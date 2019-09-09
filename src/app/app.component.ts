@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
   bookmarkRoute = 'bookmark';
 
   needClear = false;
-  searchText = APP.QUERY.BUGS_AND_ASSIGNEES;
+  searchText = APP.QUERY.IDEAS;
   isSearchBarFocused = false;
 
   // searchEvent = new EventEmitter();

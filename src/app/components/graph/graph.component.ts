@@ -4,7 +4,7 @@ import { APP } from 'src/app/common/app.constant';
 import { Neo4jService } from 'src/app/common/neo4j.service';
 import { WindowRef } from 'src/app/window-ref';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
-import { forEach, isNumber } from 'lodash';
+import { forEach, isNumber, isArray } from 'lodash';
 import { GraphService } from './graph.service';
 
 @Component({
@@ -15,7 +15,10 @@ import { GraphService } from './graph.service';
 export class GraphComponent implements OnInit {
   noData = true;
   loading = false;
+  showError = false;
   tooltipData = [];
+  gridDataObj = {};
+  gridKeys = [];
   private zoomChart: any = ZoomChart;
 
   constructor(
@@ -48,67 +51,92 @@ export class GraphComponent implements OnInit {
    * ]
    *
    */
-  processCommonData(nodesArr, relationShips) {
+  processCommonData(nodesArr, relationShips?) {
     const _data = { nodes: [], links: []};
     nodesArr.forEach(nodeGroup => {
-      relationShips.forEach(relation => {
-        const _link: any = {};
-        _link.id = `${nodeGroup[relation.from].identity}-${nodeGroup[relation.to].identity}`
-        _link.from = nodeGroup[relation.from].identity.toString();
-        _link.to = nodeGroup[relation.to].identity.toString();
-        _link.style = {};
-        _link.style.label = relation.relationship;
-        // _link.style.length = 5;
+      // relationShips.forEach(relation => {
+      //   const _link: any = {};
+      //   _link.id = `${nodeGroup[relation.from].identity}-${nodeGroup[relation.to].identity}`
+      //   _link.from = nodeGroup[relation.from].identity.toString();
+      //   _link.to = nodeGroup[relation.to].identity.toString();
+      //   _link.style = {};
+      //   _link.style.label = relation.relationship;
+      //   // _link.style.length = 5;
 
-        _data.links.push(_link);
-      });
+      //   _data.links.push(_link);
+      // });
 
       nodeGroup.forEach(node => {
-        const _node: any = {};
-        _node.id = node.identity.toString();
-        _node.label = node.labels[0];
-        _node.style = {};
-        _node.extra = [];
+        if (isArray(node)) {
+          const _relationArr = node;
+          _relationArr.forEach(_relation => {
+            const _link: any = {};
+            _link.style = {};
+            _link.style.label = APP.RELATIONSHIP_MAP[_relation.type];
+            _link.from = _relation.start.low.toString();
+            _link.to = _relation.end.low.toString();
+            _link.id = `${_link.from}-${_link.to}`;
 
-        forEach(node.properties || {}, (value, key) => {
-          const _item: any = {};
-          _item.label = key;
-          _item.content = value;
-          _node.extra.push(_item);
-        });
+            _data.links.push(_link);
+          })
+        } else if (node.type) {
+          // It is relationship array
+          const _relation = node;
+          const _link: any = {};
+          _link.style = {};
+          _link.style.label = APP.RELATIONSHIP_MAP[_relation.type];
+          _link.from = _relation.start.toString();
+          _link.to = _relation.end.toString();
+          _link.id = `${_link.from}-${_link.to}`;
 
-        if (node.labels && node.labels.length && APP.OBJECT_IMAGES[node.labels[0].toUpperCase()]) {
-          const _nodeType = node.labels[0].toUpperCase();
-          if (node.properties && node.properties.imageURL) {
-            _node.style.image = node.properties.imageURL;
-          } else {
-            const _imageFile = APP.OBJECT_IMAGES[_nodeType];
-            if (_imageFile) {
-              _node.style.image = APP.BASE_IMAGE_PATH + _imageFile;
+          _data.links.push(_link);
+        } else {
+          const _node: any = {};
+          _node.id = node.identity.toString();
+          _node.label = node.labels[0];
+          _node.style = {};
+          _node.extra = [];
+
+          forEach(node.properties || {}, (value, key) => {
+            const _item: any = {};
+            _item.label = key;
+            _item.content = value;
+            _node.extra.push(_item);
+          });
+
+          if (node.labels && node.labels.length && APP.OBJECT_IMAGES[node.labels[0].toUpperCase()]) {
+            const _nodeType = node.labels[0].toUpperCase();
+            if (node.properties && node.properties.imageURL) {
+              _node.style.image = node.properties.imageURL;
+            } else {
+              const _imageFile = APP.OBJECT_IMAGES[_nodeType];
+              if (_imageFile) {
+                _node.style.image = APP.BASE_IMAGE_PATH + _imageFile;
+              }
+            }
+
+            if (APP.OBJECT_RADIUS[_nodeType]) {
+              const _radiusObj = APP.OBJECT_RADIUS[_nodeType];
+              if (isNumber(_radiusObj)) {
+                _node.style.radius = _radiusObj;
+              } else if (_radiusObj) {
+                const _fieldValue = node.properties[_radiusObj.field];
+                const _radius = _radiusObj.radius[_fieldValue];
+                _node.style.radius = _radius;
+              }
+            }
+
+            if (APP.OBJECT_COLORS[_nodeType]) {
+              _node.style.fillColor = APP.OBJECT_COLORS[_nodeType];
+            }
+
+            if (APP.OBJECT_LABELS[_nodeType]) {
+              _node.style.label = node.properties && node.properties[APP.OBJECT_LABELS[_nodeType]];
             }
           }
 
-          if (APP.OBJECT_RADIUS[_nodeType]) {
-            const _radiusObj = APP.OBJECT_RADIUS[_nodeType];
-            if (isNumber(_radiusObj)) {
-              _node.style.radius = _radiusObj;
-            } else if (_radiusObj) {
-              const _fieldValue = node.properties[_radiusObj.field];
-              const _radius = _radiusObj.radius[_fieldValue];
-              _node.style.radius = _radius;
-            }
-          }
-
-          if (APP.OBJECT_COLORS[_nodeType]) {
-            _node.style.fillColor = APP.OBJECT_COLORS[_nodeType];
-          }
-
-          if (APP.OBJECT_LABELS[_nodeType]) {
-            _node.style.label = node.properties && node.properties[APP.OBJECT_LABELS[_nodeType]];
-          }
+          _data.nodes.push(_node);
         }
-
-        _data.nodes.push(_node);
       });
     });
     return _data;
@@ -150,9 +178,10 @@ export class GraphComponent implements OnInit {
 
     var t = new this.zoomChart.NetChart({
       container: chartContainer,
-      area: { height: 550, width: this.getWidth() - 240 },
+      area: { height: this.getHeight(), width: this.getWidth() },
       layout: {
-        groupSpacing: 50
+        // groupSpacing: 50
+        mode: 'dynamic'
       },
       data: [{
         preloaded: data
@@ -180,7 +209,7 @@ export class GraphComponent implements OnInit {
       style:{
         node: {
           labelStyle: {
-            scaleWithSize: false,
+            // scaleWithSize: false,
             textStyle: {
               font: '8px Metropolis,"Avenir Next","Helvetica Neue",Arial,sans-serif'
             }
@@ -191,7 +220,7 @@ export class GraphComponent implements OnInit {
             font: '10px Metropolis,"Avenir Next","Helvetica Neue",Arial,sans-serif'
           }
         },
-        nodeDetailMinSize: 10,
+        // nodeDetailMinSize: 10,
         // nodeDetailMinZoom: 1,
         linkLabel: {
           rotateWithLink: true,
@@ -202,7 +231,7 @@ export class GraphComponent implements OnInit {
           // scaleWithZoom: false
         },
         // linkLabelScaleBase: 0.5,
-        linkLengthExtent: [2.1, 150],
+        // linkLengthExtent: [0.5, 150],
         nodeStyleFunction: this.nodeStyleHandler,
         linkStyleFunction: this.linkStyleHandler
       },
@@ -210,10 +239,10 @@ export class GraphComponent implements OnInit {
       // interaction: { selection: { lockNodesOnMove: false } }
       interaction: {
         selection: {
-            lockNodesOnMove: false
+          lockNodesOnMove: false
         },
         zooming: {
-            autoZoomExtent: [0.5, 4]
+          // autoZoomExtent: [0.1, 4]
         }
       },
       events: {
@@ -268,39 +297,60 @@ export class GraphComponent implements OnInit {
 
   query(text) {
     this.loading = true;
+    this.showError = false;
     this.clearChart();
 
-    // const _orgRelation = this.graphService.generateRelationships(APP.QUERY.ORG);
-    const _relation = this.graphService.generateRelationships(text);
+    const _trimedText = text.trim();
+    if (_trimedText.toUpperCase().indexOf('MATCH') === 0) {
+      this.doNeo4jQuery(text);
+    } else {
+      this.neo4jService.findQueryString(text)
+      .subscribe(queryString => {
+        this.doNeo4jQuery(queryString);
+      }, error => {
+        const _query = error.error.text;
+        if (_query && _query.toUpperCase() !== 'ERROR') {
+          this.doNeo4jQuery(_query);
+        } else {
+          this.doErrorHandling();
+        }
+      })
+    }
+  }
 
-    // let _orgData;
-    // this.neo4jService.query(APP.QUERY.ORG)
-    // .then(resp => {
-    //   _orgData = this.processCommonData(resp, _orgRelation);
-    //   return this.neo4jService.query(text);
-    // })
+  doErrorHandling() {
+    this.showError = true;
+    this.loading = false;
+    this.noData = false;
+  }
+
+  doNeo4jQuery(text) {
     this.neo4jService.query(text)
     .then(resp => {
-      const _processedData = this.processCommonData(resp, _relation);
-      // const _mergedData = {
-      //   nodes: [..._orgData.nodes, ..._processedData.nodes],
-      //   links: [..._orgData.links, ..._processedData.links]
-      // }
+      const _processedData = this.processCommonData(resp);
       this.genChart(_processedData);
+      this.processGridData(resp);
       this.noData = false;
       this.loading = false;
     })
     .catch(err => {
-      this.loading = false;
+      this.doErrorHandling();
     });
   }
 
+  processGridData(resp) {
+    this.gridDataObj = {};
+    this.gridDataObj = this.graphService.generateGridData(resp);
+    this.gridKeys = Object.keys(this.gridDataObj || {});
+  }
+
   nodeStyleHandler(node) {
-    if (node.data.label === 'Person') {
+    // if (node.data.label === 'Person' || node.data.label === 'Customer' ||
+      // node.data.label === 'Bug') {
       // node.display = 'text';
       node.imageCropping = 'crop';
       // node.imageSlicing = [0,0,64,64];
-    }
+    // }
     // if (node.data.type === 'person') {
       // node.className = 'icon-class';
       // node.id = node.data.identity;
@@ -341,7 +391,17 @@ export class GraphComponent implements OnInit {
       document.body.offsetWidth,
       document.documentElement.offsetWidth,
       document.documentElement.clientWidth
-    );
+    ) - 240;
+  }
+
+  private getHeight() {
+    return Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.offsetHeight,
+      document.documentElement.clientHeight
+    ) - 96;
   }
 
 }

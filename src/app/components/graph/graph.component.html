@@ -8,13 +8,18 @@
     <clr-tab>
       <button clrTabLink>
         <clr-icon shape="bubble-chart"></clr-icon>
-        Graph
+        Overview
       </button>
       <clr-tab-content>
           <div class="clr-row tab-content-items">
             <div *ngIf="noData" class="clr-col-12 hint">
               <div class="graph-icon"></div>
               <h4 class="hint-text">Type content in search bar to view net graph...</h4>
+            </div>
+            <div *ngIf="showError" class="clr-col-12 hint">
+              <div class="money-icon"></div>
+              <h3 class="error-text">Sorry, the search has not been supported.</h3>
+              <h3 class="error-text">We need the committee to invest more resource to support it.</h3>
             </div>
             <div id="chart"></div>
           </div>
@@ -35,13 +40,31 @@
     <clr-tab>
       <button clrTabLink>
         <clr-icon shape="table"></clr-icon>
-        Table
+        Detail
       </button>
       <clr-tab-content>
         <div class="clr-row tab-content-items">
-          <div class="clr-col-12 hint">
+          <div *ngIf="noData" class="clr-col-12 hint">
             <div class="table-icon"></div>
             <h4 class="hint-text">Type content in search bar to view data grid...</h4>
+          </div>
+          <div *ngIf="gridKeys" class="grids-container">
+            <ng-container *ngFor="let key of gridKeys">
+              <h4>{{key}}</h4>
+              <clr-datagrid class="grid-container">
+                <ng-container *ngFor="let column of gridDataObj[key].columns">
+                  <clr-dg-column>{{column}}</clr-dg-column>
+                </ng-container>
+                <clr-dg-row *ngFor="let data of gridDataObj[key].data">
+                  <ng-container *ngFor="let cellField of gridDataObj[key].columns">
+                    <clr-dg-cell>{{data[cellField]}}</clr-dg-cell>
+                  </ng-container>
+                </clr-dg-row>
+                <clr-dg-footer>
+                  <span>Total: {{gridDataObj[key].data.length}} {{key}}</span>
+                </clr-dg-footer>
+              </clr-datagrid>
+            </ng-container>
           </div>
         </div>
       </clr-tab-content>

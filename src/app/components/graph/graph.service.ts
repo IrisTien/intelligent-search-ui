@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { APP } from 'src/app/common/app.constant';
-import { toArray } from 'lodash';
+import { toArray, isArray, forEach } from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -41,5 +41,45 @@ export class GraphService {
     }
 
     return _links;
+  }
+
+  generateGridData(dataArr) {
+    const _gridDataObj = {};
+    dataArr.forEach(dataGroup => {
+      dataGroup.forEach(data => {
+        if (isArray(data)) {
+          // Relationship array
+          // const _relationArr = data;
+        } else if (data.type) {
+          // Relationship
+          // const _relation = data;
+        } else {
+          // Node data
+          const _node = data;
+          if (_node.labels && _node.labels.length && _node.labels[0]) {
+            const objName = _node.labels[0];
+            if (!_gridDataObj[objName]) {
+              _gridDataObj[objName] = {
+                columns: [],
+                data: []
+              };
+            }
+            const _dataItem: any = {};
+            if (!_gridDataObj[objName].data.find(item => item.id === _node.identity)) {
+              _dataItem.id = _node.identity;
+              forEach(_node.properties || {}, (value, key) => {
+                if (_gridDataObj[objName].columns.indexOf(key) === -1) {
+                  _gridDataObj[objName].columns.push(key);
+                }
+                _dataItem[key] = value;
+              });
+
+              _gridDataObj[objName].data.push(_dataItem);
+            }
+          }
+        }
+      });
+    });
+    return _gridDataObj;
   }
 }

@@ -10,9 +10,9 @@ export const APP = {
       match (p:Person)-[:reportTo]->(m:Person)
       return p,m;`,
     IDEAS: `
-      match (p:Person)-[:submitterOf]->(i:Idea)
-      match (p)-[:reportTo]->(m:Person)
-      return p, i,m;
+      match (p:Person)-[sub:submitterOf]->(i:TechIdea)
+      match (p)-[rep:reportTo*1..2]->(m:Person)
+      return p, i,m, rep, sub;
     `,
     BUGS_AND_ASSIGNEES: `
       match (p:Person)-[:assigneeOf]->(b:Bug)
@@ -26,6 +26,14 @@ export const APP = {
         relationship: 'assignee of'
       }
     ]
+  },
+  RELATIONSHIP_MAP: {
+    submitterOf: 'submitter of',
+    reportTo: 'report to',
+    assigneeOf: 'assignee of',
+    foundIn: 'found in',
+    isComponentOf: 'component of',
+    relatedTo: 'related to'
   },
   RELATION_MAP: {
     submitterOf: {
@@ -60,19 +68,23 @@ export const APP = {
     }
   },
   OBJECT_IMAGES: {
-    PERSON: 'priest_64px.png',
-    BUG: 'ladybug_64px.png',
-    IDEA: 'head.svg',
-    TECHIDEA: 'brain.svg',
-    BUILD: 'robot.svg',
-    BUILDCOMPONENT: 'robot-arm.svg',
-    CHANGELIST: 'microchip.svg'
+    PERSON: 'user.svg',
+    BUG: 'bug2.png',
+    IDEA: 'idea.png',
+    TECHIDEA: 'idea.png',
+    BUILD: 'build2.png',
+    BUILDCOMPONENT: 'buildComponent.png',
+    CHANGELIST: 'change.jpg',
+    DPM: 'dpm1.png',
+    CUSTOMER: 'customer4.jpeg',
+    CONFLUENCE: 'confluence2.png',
+    FEATURECOMPONENT: 'feature.jpg'
   },
   OBJECT_COLORS: {
-    PERSON: 'rgba(0,183,214,0.5)',
+    PERSON: 'rgba(86,87,86,0.8)',
     BUG: 'rgba(245,118,0,0.5)',
-    IDEA: 'rgba(150,29,160,0.2)',
-    TECHIDEA: 'rgba(150,29,160,0.2)',
+    IDEA: 'rgba(1,110,26,0.7)',
+    TECHIDEA: 'rgba(1,110,26,0.7)',
     BUILD: '',
     BUILDCOMPONENT: '',
     CHANGELIST: ''
@@ -83,15 +95,19 @@ export const APP = {
     TECHIDEA: 'title',
     BUILD: 'product',
     BUILDCOMPONENT: 'product',
-    CHANGELIST: 'title'
+    CHANGELIST: 'title',
+    DPM: 'summary',
+    CUSTOMER: 'name',
+    CONFLUENCE: 'title',
+    FEATURECOMPONENT: 'name'
   },
   OBJECT_RADIUS: {
     PERSON: 35,
     IDEA: 35,
     TECHIDEA: 35,
     BUILD: 25,
-    BUILDCOMPONENT: 15,
-    CHANGELIST: 15,
+    BUILDCOMPONENT: 25,
+    CHANGELIST: 25,
     BUG: {
       field: 'priority',
       radius: {
@@ -102,6 +118,10 @@ export const APP = {
         P4: 8,
         P5: 6
       }
-    }
+    },
+    DPM: 25,
+    CUSTOMER: 25,
+    CONFLUENCE: 25,
+    FEATURECOMPONENT: 25
   }
 };

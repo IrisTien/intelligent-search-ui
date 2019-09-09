@@ -14,6 +14,10 @@
   .hint-text {
     text-align: center;
   }
+  .error-text {
+    text-align: center;
+    font-weight: 700;
+  }
 }
 
 .spinner-container {
@@ -64,4 +68,22 @@
   height: 100px;
   display: block;
   margin: 2rem auto;
+}
+
+.money-icon {
+  background: url(../../../assets/images/money-bag.svg) no-repeat;
+  background-size: contain;
+  width: 100px;
+  height: 100px;
+  display: block;
+  margin: 2rem auto;
+}
+
+.grids-container {
+  margin: 0 2rem;
+  width: calc(100vw - 240px);
+  .grid-container {
+    height: 450px;
+    overflow: auto;
+  }
 }

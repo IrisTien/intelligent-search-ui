@@ -25,7 +25,7 @@
 }
 
 .tab-content-container {
-  background-color: #EBEEF1;
+  background-color: #fff;
   height: 100vh;
   display: flex;
 }
@@ -44,7 +44,7 @@ li {
     width: 100%;
   }
   .nav {
-    width: 5rem;
+    width: 6rem;
     margin-right: 0;
     .nav-item {
       display: block;
@@ -52,4 +52,9 @@ li {
       margin-right: 0;
     }
   }
+}
+
+.datagrid-cell {
+  overflow: hidden;
+  word-break: break-all;
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { AngularNeo4jService } from 'angular-neo4j';
 import { APP } from './app.constant';
 
@@ -20,6 +20,13 @@ export class Neo4jService {
     })
     .catch(error => {
       console.log(error);
+    });
+  }
+
+  findQueryString(text) {
+    return this.http.get(`http://10.117.42.30:5000/`, {
+      params: new HttpParams()
+        .set('query', encodeURI(text))
     });
   }
 
