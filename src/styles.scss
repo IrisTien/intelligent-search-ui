@@ -63,3 +63,19 @@ li {
 textarea::-webkit-input-placeholder {
   padding-top: 4px;
 }
+
+textarea:-moz-placeholder {
+  padding-top: 4px;
+}
+
+textarea::-moz-placeholder {
+  padding-top: 4px;
+}
+
+textarea:-ms-input-placeholder {
+  padding-top: 4px;
+}
+
+textarea::placeholder {
+  padding-top: 4px;
+}

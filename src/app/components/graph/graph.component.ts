@@ -375,7 +375,7 @@ export class GraphComponent implements OnInit {
       document.body.offsetWidth,
       document.documentElement.offsetWidth,
       document.documentElement.clientWidth
-    ) - 240;
+    ) - 144;
   }
 
   private getHeight() {

@@ -56,8 +56,8 @@
 .graph-icon {
   background: url('/assets/images/main-page.png') no-repeat;
   background-size: contain;
-  width: 800px;
-  height: 500px;
+  width: calc(100vw - 600px);
+  height: calc((100vw - 600px) / 1.78);
   display: block;
   margin: auto;
 }
@@ -74,10 +74,10 @@
 .money-icon {
   background: url('/assets/images/how_to_invest.jpg') no-repeat;
   background-size: contain;
-  width: 400px;
-  height: 225px;
+  width: calc(100vw - 800px);
+  height: calc((100vw - 800px) / 1.78);
   display: block;
-  margin: 1rem auto 1.5rem auto;
+  margin: auto;
   border-radius: 10px;
   box-shadow: 0 2px 2px #eee;
 }
@@ -131,8 +131,10 @@
 .chart-legends {
   position: absolute;
   z-index: 1;
-  top: auto;
-  bottom: 0;
+  top: 96px;
+  bottom: auto;
+  left: auto;
+  right: 0;
   margin: 1rem 2rem;
   background-color: rgba(255,255,255,0.5);
 }
