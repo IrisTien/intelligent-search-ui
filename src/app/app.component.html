@@ -12,8 +12,9 @@
         <textarea type="text"
           (focus)="isSearchBarFocused=true"
           (focusout)="onFocusOut()"
-          [value]="searchText"
+          [(ngModel)]="searchText"
           (input)="onSearchBarChange($event.target.value)"
+          placeholder="{{defaultSearchText}}"
           class="search-inputfield">
         </textarea>
         <button
@@ -47,7 +48,7 @@
         <button clrTabLink [routerLink]="graphRoute">Intelligent Search</button>
         <ng-template [(clrIfActive)]="graphActive">
             <clr-tab-content>
-              <app-graph #graph></app-graph>
+              <app-graph #graph (onSearchTextChange)="onSearchTextChange($event)"></app-graph>
             </clr-tab-content>
         </ng-template>
     </clr-tab>

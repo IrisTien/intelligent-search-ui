@@ -15,7 +15,8 @@ export class AppComponent implements OnInit {
   bookmarkRoute = 'bookmark';
 
   needClear = false;
-  searchText = APP.QUERY.IDEAS;
+  searchText:string;
+  defaultSearchText = APP.QUERY.TECHFAIR_IDEA;
   isSearchBarFocused = false;
 
   // searchEvent = new EventEmitter();
@@ -41,6 +42,14 @@ export class AppComponent implements OnInit {
 
   search() {
     // this.searchEvent.emit(this.searchText);
-    this.graph.query(this.searchText);
+    if (!this.searchText) {
+      this.graph.query(this.defaultSearchText);
+    } else {
+      this.graph.query(this.searchText);
+    }
+  }
+
+  onSearchTextChange(text) {
+    this.searchText = text;
   }
 }

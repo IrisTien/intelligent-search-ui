@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import * as ZoomChart from '@dvsl/zoomcharts';
 import { APP } from 'src/app/common/app.constant';
 import { Neo4jService } from 'src/app/common/neo4j.service';
 import { WindowRef } from 'src/app/window-ref';
-import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 import { forEach, isNumber, isArray } from 'lodash';
 import { GraphService } from './graph.service';
 
@@ -13,27 +12,27 @@ import { GraphService } from './graph.service';
   styleUrls: ['./graph.component.scss']
 })
 export class GraphComponent implements OnInit {
+  @Output()
+  onSearchTextChange = new EventEmitter();
+
   noData = true;
   loading = false;
   showError = false;
   tooltipData = [];
   gridDataObj = {};
   gridKeys = [];
+  chartMode = APP.MODE.DYNAMIC;
+  nodeLegends = [];
   private zoomChart: any = ZoomChart;
+  private processedChartData = {};
 
   constructor(
     private neo4jService: Neo4jService,
     private winRef: WindowRef,
     private graphService: GraphService
   ) {
-    winRef.nativeWindow.ZoomChartsLicense = 'ZCS-zd86p98sn: ZoomCharts SDK 30 day Free Trial License for Iri..@..3.com (valid for testing only); upgrades until: 2019-10-05';
-    winRef.nativeWindow.ZoomChartsLicenseKey = "034cbe58c228be8c4379f631cafc0f2905fadddf801d8dc89c"+
-      "78e45a24537f5624e7c76a5c7c5d643e317c929c831d0e215391cb5310e93961fab2ef24fde85"+
-      "92ca902ad9b9df31d54ce5e1e906b657c0e2d23e9984d499f0ea577481dacd2ca702b58fb0a31"+
-      "b63658b71ec54b745c242b5ed666add3ae7343945649d1c15ae6273bec4a29234cf76e931f22c"+
-      "46dd920e6334d79697e043efcde804c97a3e81747ef905f65760ab423dbb7bdf98b9876e41458"+
-      "3e6ecfe530e72381c4b8e7a27f6a95ce0590d6c9bd75fe1729584b94ce2732c305f78df341750"+
-      "47bef3efaf7fdb4d1e231b9ae000a59741c35ac205462dccfc13faa64f84e5f95c5130381b62b";;
+    winRef.nativeWindow.ZoomChartsLicense = APP.ZOOMCHARTS.LICENSE;
+    winRef.nativeWindow.ZoomChartsLicenseKey = APP.ZOOMCHARTS.LICENSE_KEY;
   }
 
   ngOnInit() {}
@@ -53,6 +52,7 @@ export class GraphComponent implements OnInit {
    */
   processCommonData(nodesArr, relationShips?) {
     const _data = { nodes: [], links: []};
+    this.nodeLegends = [];
     nodesArr.forEach(nodeGroup => {
       // relationShips.forEach(relation => {
       //   const _link: any = {};
@@ -78,7 +78,7 @@ export class GraphComponent implements OnInit {
             _link.id = `${_link.from}-${_link.to}`;
 
             _data.links.push(_link);
-          })
+          });
         } else if (node.type) {
           // It is relationship array
           const _relation = node;
@@ -106,6 +106,16 @@ export class GraphComponent implements OnInit {
 
           if (node.labels && node.labels.length && APP.OBJECT_IMAGES[node.labels[0].toUpperCase()]) {
             const _nodeType = node.labels[0].toUpperCase();
+
+            if (!this.nodeLegends.find(item => item.className === node.labels[0])) {
+              this.nodeLegends.push({
+                className: node.labels[0],
+                style: {
+                  image: APP.BASE_IMAGE_PATH + APP.OBJECT_IMAGES[_nodeType]
+                }
+              });
+            }
+
             if (node.properties && node.properties.imageURL) {
               _node.style.image = node.properties.imageURL;
             } else {
@@ -142,35 +152,7 @@ export class GraphComponent implements OnInit {
     return _data;
   }
 
-  // processBugAndAssignee(nodesArr) {
-  //   const _data = { nodes: [], links: []};
-  //   nodesArr.forEach(nodeGroup => {
-  //     const _link: any = {};
-  //     _link.id = `${nodeGroup[0].identity}-${nodeGroup[1].identity}`;
-  //     _link.label = 'is assignee of';
-  //     _link.from = nodeGroup[0].identity.toString();
-  //     _link.to = nodeGroup[1].identity.toString();
-
-  //     _data.links.push(_link);
-
-  //     nodeGroup.forEach(node => {
-  //       const _node: any = {};
-  //       _node.id = node.identity.toString();
-  //       _node.label = node.labels[0];
-  //       _node.style = {};
-  //       if (node.labels[0] === 'Person') {
-  //         _node.style.image = APP.BASE_IMAGE_PATH + 'user-solid.svg';
-  //       } else if (node.labels[0] === 'Bug') {
-  //         _node.style.image = APP.BASE_IMAGE_PATH + 'bug-solid.svg';
-  //       }
-
-  //       _data.nodes.push(_node);
-  //     });
-  //   });
-  //   return _data;
-  // }
-
-  genChart(data?) {
+  genChart(data?, mode?) {
     const infoElement: any = document.getElementById("tooltip");
 
     const chartContainer = document.getElementById("chart");
@@ -181,32 +163,14 @@ export class GraphComponent implements OnInit {
       area: { height: this.getHeight(), width: this.getWidth() },
       layout: {
         // groupSpacing: 50
-        mode: 'dynamic'
+        mode: mode ? mode : APP.MODE.DYNAMIC
       },
+      legend: { enabled: true },
       data: [{
         preloaded: data
       }],
-      // data: [{
-      //   url: '/assets/data.json'
-      // }],
-      // data: [{
-      //   preloaded: {
-      //     nodes: [
-      //       {
-      //         id: "foo",
-      //         loaded: false
-      //       },
-      //       { id: "bar", loaded: true },
-      //       { id: "baz", loaded: true }
-      //     ],
-      //     links: [
-      //       { id: "foo-bar", from: "foo", to: "bar" },
-      //       { id: "bar-baz", from: "bar", to: "baz" },
-      //       { id: "baz-foo", from: "baz", to: "foo" }
-      //     ]
-      //   }
-      // }],
       style:{
+        // nodeClasses: this.nodeLegends,
         node: {
           labelStyle: {
             // scaleWithSize: false,
@@ -263,10 +227,21 @@ export class GraphComponent implements OnInit {
         },
         onClick: (event, args) => {
           if (args.hoverNode) {
-            const _extraData = args.hoverNode.data && args.hoverNode.data.extra;
-            const _link = _extraData.find(item => item.label === 'link');
-            if (_link) {
-              window.open(_link.content, "_blank");
+            if (args.hoverNode.data.label === 'Person') {
+              // Search neo4j for this person
+              const _personName = args.hoverNode.label;
+              this.onSearchTextChange.emit(_personName);
+              this.query(_personName);
+            } else if (args.hoverNode.data.label === 'Bug') {
+              const _bugQueryText = `Bug ${args.hoverNode.label}`;
+              this.onSearchTextChange.emit(_bugQueryText);
+              this.query(_bugQueryText);
+            } else {
+              const _extraData = args.hoverNode.data && args.hoverNode.data.extra;
+              const _link = _extraData.find(item => item.label === 'link');
+              if (_link) {
+                window.open(_link.content, "_blank");
+              }
             }
           }
         }
@@ -295,6 +270,10 @@ export class GraphComponent implements OnInit {
     }
   }
 
+  openLink(link) {
+    window.open(link, "_blank");
+  }
+
   query(text) {
     this.loading = true;
     this.showError = false;
@@ -318,6 +297,11 @@ export class GraphComponent implements OnInit {
     }
   }
 
+  onModeChange(mode) {
+    this.clearChart();
+    this.genChart(this.processedChartData, mode);
+  }
+
   doErrorHandling() {
     this.showError = true;
     this.loading = false;
@@ -327,8 +311,8 @@ export class GraphComponent implements OnInit {
   doNeo4jQuery(text) {
     this.neo4jService.query(text)
     .then(resp => {
-      const _processedData = this.processCommonData(resp);
-      this.genChart(_processedData);
+      this.processedChartData = this.processCommonData(resp);
+      this.genChart(this.processedChartData, this.chartMode);
       this.processGridData(resp);
       this.noData = false;
       this.loading = false;
@@ -401,7 +385,7 @@ export class GraphComponent implements OnInit {
       document.body.offsetHeight,
       document.documentElement.offsetHeight,
       document.documentElement.clientHeight
-    ) - 96;
+    ) - 216;
   }
 
 }

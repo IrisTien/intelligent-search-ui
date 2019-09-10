@@ -11,30 +11,45 @@
         Overview
       </button>
       <clr-tab-content>
-          <div class="clr-row tab-content-items">
-            <div *ngIf="noData" class="clr-col-12 hint">
-              <div class="graph-icon"></div>
-              <h4 class="hint-text">Type content in search bar to view net graph...</h4>
-            </div>
-            <div *ngIf="showError" class="clr-col-12 hint">
-              <div class="money-icon"></div>
-              <h3 class="error-text">Sorry, the search has not been supported.</h3>
-              <h3 class="error-text">We need the committee to invest more resource to support it.</h3>
-            </div>
-            <div id="chart"></div>
+        <div class="clr-row tab-content-items">
+          <div *ngIf="noData" class="clr-col-12 hint">
+            <div class="graph-icon"></div>
           </div>
-          <div id="tooltip" class="tooltip">
-            <div class="clr-row">
-              <ng-container *ngFor="let item of tooltipData">
-                <div class="clr-col-sm-2 tooltip-item tooltip-item-label">
-                  <label>{{item.label}}</label>
-                </div>
-                <div class="clr-col-sm-10 tooltip-item">
-                  <span>{{item.content}}</span>
-                </div>
-              </ng-container>
-            </div>
+          <div *ngIf="showError" class="clr-col-12 hint">
+            <div class="money-icon"></div>
+            <h3 class="error-text">Sorry, the search has not been supported.</h3>
+            <h3 class="error-text">I can be smarter if you <strong class="money-text">invest</strong> more resource for this idea.</h3>
           </div>
+          <clr-select-container class="action-bar" *ngIf="!noData && !loading && !showError">
+            <select clrSelect name="chartMode"
+              [(ngModel)]="chartMode"
+              (change)="onModeChange($event.target.value)">
+              <option value="dynamic">Dynamic</option>
+              <option value="radial">Radial</option>
+            </select>
+          </clr-select-container>
+          <div class="chart-legends" *ngIf="!noData && !loading && !showError">
+            <ng-container *ngFor="let legend of nodeLegends">
+              <div class="legend-container">
+                <img class="legend-img" src="{{legend.style.image}}" />
+                <span>{{legend.className}}</span>
+              </div>
+            </ng-container>
+          </div>
+          <div id="chart"></div>
+        </div>
+        <div id="tooltip" class="tooltip">
+          <div class="clr-row">
+            <ng-container *ngFor="let item of tooltipData">
+              <div class="clr-col-sm-2 tooltip-item tooltip-item-label">
+                <label>{{item.label}}</label>
+              </div>
+              <div class="clr-col-sm-10 tooltip-item">
+                <span>{{item.content}}</span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
       </clr-tab-content>
     </clr-tab>
     <clr-tab>
@@ -51,19 +66,36 @@
           <div *ngIf="gridKeys" class="grids-container">
             <ng-container *ngFor="let key of gridKeys">
               <h4>{{key}}</h4>
-              <clr-datagrid class="grid-container">
+              <clr-datagrid class="grid-container" *ngIf="key !== 'Person'">
                 <ng-container *ngFor="let column of gridDataObj[key].columns">
                   <clr-dg-column>{{column}}</clr-dg-column>
                 </ng-container>
                 <clr-dg-row *ngFor="let data of gridDataObj[key].data">
                   <ng-container *ngFor="let cellField of gridDataObj[key].columns">
-                    <clr-dg-cell>{{data[cellField]}}</clr-dg-cell>
+                    <clr-dg-cell *ngIf="cellField !== 'link'">{{data[cellField]}}</clr-dg-cell>
+                    <clr-dg-cell *ngIf="cellField === 'link'">
+                      <a href="{{data[cellField]}}" target="_blank">{{data[cellField]}}</a>
+                    </clr-dg-cell>
                   </ng-container>
                 </clr-dg-row>
                 <clr-dg-footer>
                   <span>Total: {{gridDataObj[key].data.length}} {{key}}</span>
                 </clr-dg-footer>
               </clr-datagrid>
+              <div class="grid-container" *ngIf="key === 'Person'">
+                <div class="clr-row">
+                    <ng-container *ngFor="let data of gridDataObj[key].data; index as i">
+                      <div class="clr-col-2 person-summary" (click)="openLink(data.link)">
+                        <img class="person-img" [src]="data.imageURL" *ngIf="data.imageURL; else defaultImage"/>
+                        <ng-template #defaultImage>
+                          <span class="user-icon person-img"></span>
+                        </ng-template>
+                        <span class="person-desp">{{data.shortName}}</span>
+                        <span class="person-desp">{{data.title}}</span>
+                      </div>
+                    </ng-container>
+                  </div>
+              </div>
             </ng-container>
           </div>
         </div>

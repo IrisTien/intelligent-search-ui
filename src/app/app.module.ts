@@ -12,6 +12,7 @@ import { CatalogModule } from './components/catalog/catalog.module';
 import { GraphModule } from './components/graph/graph.module';
 import { HttpClientModule } from '@angular/common/http';
 import { WindowRef } from './window-ref';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { WindowRef } from './window-ref';
     HttpClientModule,
     BrowserModule,
     AppRoutingModule,
+    FormsModule,
     ClarityModule,
     AngularNeo4jModule,
     BrowserAnimationsModule,

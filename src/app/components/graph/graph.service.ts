@@ -61,9 +61,12 @@ export class GraphService {
             if (!_gridDataObj[objName]) {
               _gridDataObj[objName] = {
                 columns: [],
-                data: []
+                data: [],
               };
             }
+            // if (objName === 'Person') {
+            //   _gridDataObj[objName].type = 'Summary';
+            // }
             const _dataItem: any = {};
             if (!_gridDataObj[objName].data.find(item => item.id === _node.identity)) {
               _dataItem.id = _node.identity;

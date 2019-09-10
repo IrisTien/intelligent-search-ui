@@ -24,7 +24,7 @@ export class Neo4jService {
   }
 
   findQueryString(text) {
-    return this.http.get(`http://10.117.42.30:5000/`, {
+    return this.http.get(APP.NEO4J.GET_QUERY_URL, {
       params: new HttpParams()
         .set('query', encodeURI(text))
     });
