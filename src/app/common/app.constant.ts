@@ -2,8 +2,8 @@ export const APP = {
   BASE_IMAGE_PATH: '../../../assets/images/',
   NEO4J: {
     USER: 'neo4j',
-    PASSWORD: 'test',
-    URL: 'bolt://10.117.43.215:7687',
+    PASSWORD: 'ca$hc0w', // 'test',
+    URL: 'bolt://10.117.163.70:7687', // 'bolt://10.117.43.215:7687',
     GET_QUERY_URL: 'http://10.117.42.30:5000/'
   },
   ZOOMCHARTS: {
